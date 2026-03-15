@@ -3,73 +3,57 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>MeetPlan AI – Meeting to Project Plan Generator</title>
+<title>MeetPlan AI</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080a0f;--s1:#0f1117;--s2:#161820;--s3:#1c1f2a;
-  --b1:#252836;--b2:#2e3245;
+  --bg:#080a0f;--s2:#161820;--s3:#1c1f2a;--b1:#252836;--b2:#2e3245;
   --amber:#f5a623;--amber2:#ffc144;--amber3:rgba(245,166,35,.12);
   --green:#3dd68c;--blue:#5b9cf6;--purple:#9d7ff4;--red:#f56565;
-  --t1:#f0f2f8;--t2:#9ca3b8;--t3:#5a6079;
-  --r:10px;--rm:6px;
+  --t1:#f0f2f8;--t2:#9ca3b8;--t3:#5a6079;--r:10px;--rm:6px;
 }
 html,body{min-height:100%;font-family:'Syne',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden}
-
-nav{position:sticky;top:0;z-index:200;background:rgba(8,10,15,.92);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem}
+nav{position:sticky;top:0;z-index:200;background:rgba(8,10,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem}
 .logo{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
 .logo b{color:var(--amber)}
-.logo sup{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--t3);font-weight:400;letter-spacing:.05em;vertical-align:super;margin-left:3px}
-.step-pill{display:flex;gap:7px;align-items:center}
+.logo sup{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--t3);font-weight:400;vertical-align:super;margin-left:3px}
+.step-pill{display:flex;gap:7px}
 .sp{width:26px;height:4px;border-radius:2px;background:var(--b2);transition:all .35s}
 .sp.on{background:var(--amber)}
 .sp.done{background:var(--green)}
-
 .page{display:none;animation:fadeUp .35s ease}
 .page.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
 .home{max-width:900px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
-.badge{display:inline-flex;align-items:center;gap:7px;background:var(--amber3);
-  border:1px solid rgba(245,166,35,.3);border-radius:100px;padding:5px 18px;
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--amber);
-  letter-spacing:.07em;text-transform:uppercase;margin-bottom:2rem}
+.badge{display:inline-flex;align-items:center;gap:7px;background:var(--amber3);border:1px solid rgba(245,166,35,.3);border-radius:100px;padding:5px 18px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--amber);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2rem}
 .ping{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:ping 2s ease-in-out infinite}
 @keyframes ping{0%,100%{opacity:1}50%{opacity:.35}}
 h1{font-size:clamp(2rem,5.5vw,4rem);font-weight:800;line-height:1.07;letter-spacing:-.03em;margin-bottom:1.2rem}
 h1 em{font-style:italic;color:var(--amber)}
 .sub{font-size:1rem;color:var(--t2);max-width:540px;margin:0 auto 2.6rem;line-height:1.8;font-weight:400}
 .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:3.5rem auto;max-width:860px}
 .card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:1.3rem;text-align:left;transition:border-color .25s,transform .2s}
 .card:hover{border-color:var(--amber);transform:translateY(-2px)}
 .ci{width:36px;height:36px;border-radius:8px;background:var(--amber3);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.9rem}
 .card h3{font-size:.88rem;font-weight:700;margin-bottom:.35rem}
 .card p{font-size:.78rem;color:var(--t3);line-height:1.65}
-
-.btn{border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;border-radius:var(--rm);transition:all .2s;letter-spacing:.01em}
+.btn{border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;border-radius:var(--rm);transition:all .2s}
 .btn-p{background:var(--amber);color:#080a0f;padding:.72rem 2rem;font-size:.9rem}
-.btn-p:hover{background:var(--amber2);transform:translateY(-1px);box-shadow:0 6px 24px rgba(245,166,35,.22)}
+.btn-p:hover{background:var(--amber2);transform:translateY(-1px)}
 .btn-o{background:transparent;color:var(--t1);border:1px solid var(--b2);padding:.68rem 1.7rem;font-size:.88rem}
 .btn-o:hover{border-color:var(--amber);color:var(--amber)}
 .btn-sm{background:var(--s3);color:var(--t2);border:1px solid var(--b1);padding:.35rem .95rem;font-size:.7rem;font-family:'JetBrains Mono',monospace;cursor:pointer;border-radius:var(--rm);transition:all .2s}
 .btn-sm:hover{border-color:var(--amber);color:var(--amber)}
-.btn-back{background:transparent;color:var(--t3);border:1px solid var(--b1);padding:.55rem 1.3rem;
-  font-size:.82rem;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;border-radius:var(--rm);transition:all .2s}
+.btn-back{background:transparent;color:var(--t3);border:1px solid var(--b1);padding:.55rem 1.3rem;font-size:.82rem;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;border-radius:var(--rm);transition:all .2s}
 .btn-back:hover{color:var(--t1);border-color:var(--b2)}
-
 .inp-wrap{max-width:780px;margin:0 auto;padding:3rem 2rem}
 .inp-wrap h2{font-size:1.7rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
 .inp-sub{color:var(--t3);font-size:.88rem;margin-bottom:1.8rem}
-.lbl{display:block;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--t3);
-  letter-spacing:.08em;text-transform:uppercase;margin-bottom:.55rem}
-textarea{width:100%;min-height:250px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);
-  color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.85;
-  padding:1.1rem 1.3rem;resize:vertical;outline:none;transition:border-color .2s}
+.lbl{display:block;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.55rem}
+textarea{width:100%;min-height:250px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.85;padding:1.1rem 1.3rem;resize:vertical;outline:none;transition:border-color .2s}
 textarea:focus{border-color:var(--amber)}
 textarea::placeholder{color:var(--t3)}
 .meta{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:8px}
@@ -77,10 +61,8 @@ textarea::placeholder{color:var(--t3)}
 .sbuts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .slbl{font-size:.7rem;color:var(--t3)}
 .gen-row{display:flex;align-items:center;gap:12px;margin-top:1.5rem;flex-wrap:wrap}
-.err{background:rgba(245,101,101,.07);border:1px solid rgba(245,101,101,.2);border-radius:var(--rm);
-  color:var(--red);font-size:.83rem;padding:.8rem 1rem;margin-top:.9rem;display:none}
+.err{background:rgba(245,101,101,.07);border:1px solid rgba(245,101,101,.2);border-radius:var(--rm);color:var(--red);font-size:.83rem;padding:.8rem 1rem;margin-top:.9rem;display:none}
 .err.on{display:block}
-
 #loading{display:none;flex-direction:column;align-items:center;padding:5rem 2rem;gap:.9rem}
 #loading.on{display:flex}
 .spin{width:38px;height:38px;border:2.5px solid var(--b2);border-top-color:var(--amber);border-radius:50%;animation:spin 1s linear infinite}
@@ -93,24 +75,19 @@ textarea::placeholder{color:var(--t3)}
 .ls.active::before{content:'◉  '}
 .ls.done{color:var(--green)}
 .ls.done::before{content:'✓  '}
-
 .res-wrap{max-width:920px;margin:0 auto;padding:2rem 2rem 5rem}
 .res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;flex-wrap:wrap;gap:10px}
 .res-hdr h2{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
 .rcard{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:1.4rem;margin-bottom:1.1rem}
 .rcard-hdr{display:flex;align-items:center;gap:10px;margin-bottom:1.1rem}
-.num{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--amber);
-  background:var(--amber3);border:1px solid rgba(245,166,35,.2);border-radius:4px;padding:2px 8px}
-.rtitle{font-size:.9rem;font-weight:700;letter-spacing:.01em}
-
+.num{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--amber);background:var(--amber3);border:1px solid rgba(245,166,35,.2);border-radius:4px;padding:2px 8px}
+.rtitle{font-size:.9rem;font-weight:700}
 .tlist{display:flex;flex-direction:column;gap:7px}
 .titem{display:flex;align-items:center;gap:9px;background:var(--s3);border-radius:7px;padding:.62rem 1rem;font-size:.85rem}
 .tdot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
-
 .wbs{font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:2.1}
 .wcat{color:var(--amber);font-weight:500}
 .wit{color:var(--t3);padding-left:1.3rem}
-
 .dlist{display:flex;flex-direction:column;gap:10px}
 .ditem{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.83rem}
 .dtag{border-radius:5px;padding:3px 10px;font-size:.74rem}
@@ -118,12 +95,9 @@ textarea::placeholder{color:var(--t3)}
 .dt{background:rgba(157,127,244,.1);border:1px solid rgba(157,127,244,.2);color:var(--purple)}
 .da{color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:.8rem}
 .dl{color:var(--t3);font-size:.74rem;font-style:italic}
-
 .alist{display:flex;flex-direction:column;gap:9px}
 .aitem{display:flex;align-items:flex-start;gap:9px;font-size:.84rem}
-.aw{background:rgba(61,214,140,.1);border:1px solid rgba(61,214,140,.2);color:var(--green);
-  border-radius:5px;padding:3px 10px;font-size:.73rem;white-space:nowrap;font-family:'JetBrains Mono',monospace}
-
+.aw{background:rgba(61,214,140,.1);border:1px solid rgba(61,214,140,.2);color:var(--green);border-radius:5px;padding:3px 10px;font-size:.73rem;white-space:nowrap;font-family:'JetBrains Mono',monospace}
 .tllist{display:flex;flex-direction:column}
 .tlrow{display:flex;gap:16px;padding-bottom:.9rem}
 .tll{display:flex;flex-direction:column;align-items:center;min-width:92px}
@@ -132,21 +106,12 @@ textarea::placeholder{color:var(--t3)}
 .tlrow:last-child .tlline{display:none}
 .tltask{font-size:.85rem;font-weight:600;margin-bottom:.15rem}
 .tldur{font-size:.74rem;color:var(--t3)}
-
 .gantt-wrap{overflow-x:auto;padding-top:.6rem}
 #ganttCanvas{min-width:480px}
-
-@media(max-width:600px){
-  nav{padding:.75rem 1rem}
-  .home{padding:3rem 1rem 2rem}
-  .cards{margin:2rem auto}
-  .inp-wrap,.res-wrap{padding-left:1rem;padding-right:1rem}
-  h1{font-size:2rem}
-}
+@media(max-width:600px){nav{padding:.75rem 1rem}.home{padding:3rem 1rem 2rem}.inp-wrap,.res-wrap{padding-left:1rem;padding-right:1rem}h1{font-size:2rem}}
 </style>
 </head>
 <body>
-
 <nav>
   <div class="logo">Meet<b>Plan</b><sup>AI</sup></div>
   <div class="step-pill">
@@ -156,7 +121,6 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </nav>
 
-<!-- HOME -->
 <div class="page on" id="pg-home">
   <div class="home">
     <div class="badge"><div class="ping"></div>AI · NLP · Project Management</div>
@@ -175,13 +139,12 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </div>
 
-<!-- INPUT -->
 <div class="page" id="pg-input">
   <div class="inp-wrap">
     <h2>Paste your transcript</h2>
     <p class="inp-sub">Include speaker names and discussion points for best results</p>
     <span class="lbl">Meeting Transcript</span>
-    <textarea id="tx" placeholder="Rahul: We should begin with UI design this week.&#10;Aditi: Backend API development can start next week.&#10;Client: Payment gateway integration must be done before launch.&#10;PM: Testing will start after development is complete.&#10;..." oninput="countChars()"></textarea>
+    <textarea id="tx" placeholder="Rahul: We should begin with UI design this week.&#10;Aditi: Backend API development can start next week.&#10;Client: Payment gateway integration must be done before launch.&#10;PM: Testing will start after development is complete." oninput="countChars()"></textarea>
     <div class="meta">
       <span id="cc">0 characters</span>
       <div class="sbuts">
@@ -199,7 +162,6 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </div>
 
-<!-- LOADING -->
 <div id="loading">
   <div class="spin"></div>
   <div class="ld-txt">Analyzing transcript with AI…</div>
@@ -212,220 +174,135 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </div>
 
-<!-- RESULTS -->
 <div class="page" id="pg-results">
   <div class="res-wrap">
     <div class="res-hdr">
       <h2>Generated Project Plan</h2>
       <button class="btn-back" onclick="go('input')">← New Transcript</button>
     </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">01</span><span class="rtitle">Extracted Tasks</span></div>
-      <div class="tlist" id="r-tasks"></div>
-    </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">02</span><span class="rtitle">Work Breakdown Structure</span></div>
-      <div class="wbs" id="r-wbs"></div>
-    </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">03</span><span class="rtitle">Task Dependencies</span></div>
-      <div class="dlist" id="r-deps"></div>
-    </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">04</span><span class="rtitle">Action Items</span></div>
-      <div class="alist" id="r-acts"></div>
-    </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">05</span><span class="rtitle">Project Timeline</span></div>
-      <div class="tllist" id="r-tl"></div>
-    </div>
-    <div class="rcard">
-      <div class="rcard-hdr"><span class="num">06</span><span class="rtitle">Gantt Chart</span></div>
-      <div class="gantt-wrap"><canvas id="ganttCanvas"></canvas></div>
-    </div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">01</span><span class="rtitle">Extracted Tasks</span></div><div class="tlist" id="r-tasks"></div></div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">02</span><span class="rtitle">Work Breakdown Structure</span></div><div class="wbs" id="r-wbs"></div></div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">03</span><span class="rtitle">Task Dependencies</span></div><div class="dlist" id="r-deps"></div></div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">04</span><span class="rtitle">Action Items</span></div><div class="alist" id="r-acts"></div></div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">05</span><span class="rtitle">Project Timeline</span></div><div class="tllist" id="r-tl"></div></div>
+    <div class="rcard"><div class="rcard-hdr"><span class="num">06</span><span class="rtitle">Gantt Chart</span></div><div class="gantt-wrap"><canvas id="ganttCanvas"></canvas></div></div>
   </div>
 </div>
 
 <script>
-const SAMPLES = {
-  ecom: `PM: Let's kick off the e-commerce platform project today.
+const SAMPLES={
+ecom:`PM: Let's kick off the e-commerce platform project today.
 Rahul: I will start with the UI design for the homepage and product listing pages this week.
 Aditi: Backend API development including user authentication and product catalog can begin in week two.
 Client: The payment gateway integration with Razorpay must be completed before we go live.
 Priya: We also need cart and checkout functionality fully done before the payment gateway work starts.
 QA Lead: Our testing and UAT phase will begin once all development is signed off.
 PM: Technical documentation and final deployment should be scheduled for the last week.`,
-
-  mobile: `Alice: Let's begin by finalizing the mobile app architecture before anything else.
+mobile:`Alice: Let's begin by finalizing the mobile app architecture before anything else.
 Bob: Database schema design should follow right after we lock down the architecture.
 Carol: I can handle the UI and UX wireframes in parallel with the architecture work.
 Dev Lead: React Native development can start once both the wireframes and schema are approved.
 Alice: Third-party API integrations for maps and push notifications can begin mid-development.
 QA: We will need at least two weeks for testing once the first build is ready.
 PM: App store submission is the very last step after testing is signed off.`,
-
-  infra: `CTO: We need to migrate our entire infrastructure to AWS this quarter.
+infra:`CTO: We need to migrate our entire infrastructure to AWS this quarter.
 DevOps: The first step has to be a thorough audit of our current on-premise setup.
 Lead Engineer: Cloud architecture design will be based on the audit findings.
 DevOps: A security and compliance review must be completed before any migration starts.
 Team: Data migration and backup can run in parallel with application containerization.
 CTO: The staging environment must go live and be validated before we touch production.
 QA: Load testing needs to pass before the production cutover.
-PM: Go-live monitoring and post-migration support is our final phase.`
-};
+PM: Go-live monitoring and post-migration support is our final phase.`};
 
-let ganttInst = null;
+let ganttInst=null;
 
-function go(p) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('on'));
+function go(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.getElementById('loading').classList.remove('on');
-  if (p !== 'loading') document.getElementById('pg-' + p).classList.add('on');
-  const idx = { home:0, input:1, results:2 }[p] ?? 0;
-  ['sp1','sp2','sp3'].forEach((id, i) => {
-    document.getElementById(id).className = 'sp' + (i < idx ? ' done' : i === idx ? ' on' : '');
+  if(p!=='loading') document.getElementById('pg-'+p).classList.add('on');
+  const idx={home:0,input:1,results:2}[p]??0;
+  ['sp1','sp2','sp3'].forEach((id,i)=>{
+    document.getElementById(id).className='sp'+(i<idx?' done':i===idx?' on':'');
   });
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
-function demo() { sample('ecom'); go('input'); }
-function countChars() { document.getElementById('cc').textContent = document.getElementById('tx').value.length + ' characters'; }
-function sample(k) { document.getElementById('tx').value = SAMPLES[k]; countChars(); }
-function showErr(m) { const e = document.getElementById('err'); e.textContent = m; e.classList.add('on'); }
-function hideErr() { document.getElementById('err').classList.remove('on'); }
-const delay = ms => new Promise(r => setTimeout(r, ms));
+function demo(){sample('ecom');go('input');}
+function countChars(){document.getElementById('cc').textContent=document.getElementById('tx').value.length+' characters';}
+function sample(k){document.getElementById('tx').value=SAMPLES[k];countChars();}
+function showErr(m){const e=document.getElementById('err');e.textContent=m;e.classList.add('on');}
+function hideErr(){document.getElementById('err').classList.remove('on');}
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
 
-async function animLoader() {
-  const ids = ['l1','l2','l3','l4','l5'];
-  for (let i = 0; i < ids.length; i++) {
+async function animLoader(){
+  const ids=['l1','l2','l3','l4','l5'];
+  for(let i=0;i<ids.length;i++){
     await delay(520);
-    if (i > 0) {
-      document.getElementById(ids[i-1]).classList.remove('active');
-      document.getElementById(ids[i-1]).classList.add('done');
-    }
+    if(i>0){document.getElementById(ids[i-1]).classList.remove('active');document.getElementById(ids[i-1]).classList.add('done');}
     document.getElementById(ids[i]).classList.add('active');
   }
 }
 
-async function generate() {
-  const tx = document.getElementById('tx').value.trim();
-  if (!tx) { showErr('Please paste a meeting transcript first.'); return; }
-  if (tx.length < 40) { showErr('Transcript is too short. Add more content.'); return; }
+async function generate(){
+  const tx=document.getElementById('tx').value.trim();
+  if(!tx){showErr('Please paste a meeting transcript first.');return;}
+  if(tx.length<40){showErr('Transcript is too short.');return;}
   hideErr();
-  ['l1','l2','l3','l4','l5'].forEach(id => document.getElementById(id).className = 'ls');
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('on'));
+  ['l1','l2','l3','l4','l5'].forEach(id=>document.getElementById(id).className='ls');
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.getElementById('loading').classList.add('on');
   animLoader();
 
-  const prompt = `You are a project management AI. Analyze this meeting transcript and return ONLY valid JSON — no markdown, no explanation.
-
-Meeting Transcript:
-"""
-${tx}
-"""
-
-Return exactly this structure:
-{"tasks":["Task 1","Task 2"],"wbs":[{"category":"Design","id":"1","items":[{"id":"1.1","name":"UI Design"}]}],"dependencies":[{"from":"Task A","to":"Task B","label":"must complete before"}],"actions":[{"who":"Person","what":"action"}],"timeline":[{"weeks":"Week 1-2","task":"Task Name","duration":"2 weeks"}]}
-
-Rules: extract ALL tasks; group into WBS categories (Design/Development/Testing/Deployment); use real names for actions; sequential dependencies; realistic durations (design 1-2w, dev 2-4w, testing 1-2w); timeline starts Week 1.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1200,
-        messages: [{ role: 'user', content: prompt }]
-      })
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({transcript:tx})
     });
-    const d = await res.json();
-    const raw = d.content.map(b => b.text || '').join('');
-    const data = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||'Server error');
     await delay(300);
     document.getElementById('loading').classList.remove('on');
     renderAll(data);
     go('results');
-  } catch(e) {
+  }catch(e){
     document.getElementById('loading').classList.remove('on');
     go('input');
-    showErr('Error: ' + e.message + '. Please try again.');
+    showErr('Error: '+e.message);
   }
 }
 
-function renderAll(d) {
-  document.getElementById('r-tasks').innerHTML = (d.tasks||[]).map(t =>
-    `<div class="titem"><div class="tdot"></div>${t}</div>`).join('');
-
-  document.getElementById('r-wbs').innerHTML = (d.wbs||[]).map(c =>
-    `<div class="wcat">${c.id}. ${c.category}</div>` +
-    (c.items||[]).map(i => `<div class="wit">${i.id} ${i.name}</div>`).join('')
-  ).join('');
-
-  document.getElementById('r-deps').innerHTML = (d.dependencies||[]).map(x =>
-    `<div class="ditem">
-      <span class="dtag df">${x.from}</span>
-      <span class="da">──▶</span>
-      <span class="dtag dt">${x.to}</span>
-      <span class="dl">${x.label}</span>
-    </div>`).join('');
-
-  document.getElementById('r-acts').innerHTML = (d.actions||[]).map(a =>
-    `<div class="aitem"><span class="aw">${a.who}</span><span>${a.what}</span></div>`).join('');
-
-  document.getElementById('r-tl').innerHTML = (d.timeline||[]).map(t =>
-    `<div class="tlrow">
-      <div class="tll"><div class="tlw">${t.weeks}</div><div class="tlline"></div></div>
-      <div><div class="tltask">${t.task}</div><div class="tldur">${t.duration}</div></div>
-    </div>`).join('');
-
-  renderGantt(d.timeline || []);
+function renderAll(d){
+  document.getElementById('r-tasks').innerHTML=(d.tasks||[]).map(t=>`<div class="titem"><div class="tdot"></div>${t}</div>`).join('');
+  document.getElementById('r-wbs').innerHTML=(d.wbs||[]).map(c=>`<div class="wcat">${c.id}. ${c.category}</div>`+(c.items||[]).map(i=>`<div class="wit">${i.id} ${i.name}</div>`).join('')).join('');
+  document.getElementById('r-deps').innerHTML=(d.dependencies||[]).map(x=>`<div class="ditem"><span class="dtag df">${x.from}</span><span class="da">──▶</span><span class="dtag dt">${x.to}</span><span class="dl">${x.label}</span></div>`).join('');
+  document.getElementById('r-acts').innerHTML=(d.actions||[]).map(a=>`<div class="aitem"><span class="aw">${a.who}</span><span>${a.what}</span></div>`).join('');
+  document.getElementById('r-tl').innerHTML=(d.timeline||[]).map(t=>`<div class="tlrow"><div class="tll"><div class="tlw">${t.weeks}</div><div class="tlline"></div></div><div><div class="tltask">${t.task}</div><div class="tldur">${t.duration}</div></div></div>`).join('');
+  renderGantt(d.timeline||[]);
 }
 
-function renderGantt(tl) {
-  if (ganttInst) { ganttInst.destroy(); ganttInst = null; }
-  if (!tl.length) return;
-  const colors = ['#f5a623','#5b9cf6','#9d7ff4','#3dd68c','#f56565','#fb923c','#38bdf8','#c084fc'];
-  const parseW = w => { const m = w.match(/(\d+)[^\d]+(\d+)/); return m ? [+m[1], +m[2]] : [1, 2]; };
-  const labels    = tl.map(t => t.task.length > 24 ? t.task.slice(0,22)+'…' : t.task);
-  const starts    = tl.map(t => parseW(t.weeks)[0] - 1);
-  const durations = tl.map(t => { const [s,e] = parseW(t.weeks); return e - s + 1; });
-  const canvas    = document.getElementById('ganttCanvas');
-  canvas.height   = Math.max(180, tl.length * 46 + 70);
-  ganttInst = new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { data: starts, backgroundColor: 'transparent', borderWidth: 0, barPercentage: 0.6 },
-        { data: durations, backgroundColor: colors.slice(0, tl.length), borderWidth: 0, barPercentage: 0.6, borderRadius: 5 }
-      ]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ctx.datasetIndex === 0 ? null : ` ${tl[ctx.dataIndex].weeks}  ·  ${tl[ctx.dataIndex].duration}`
-          }
-        }
-      },
-      scales: {
-        x: {
-          stacked: true,
-          title: { display: true, text: 'Project Weeks', color: '#5a6079', font: { family: 'JetBrains Mono', size: 11 } },
-          ticks: { color: '#5a6079', stepSize: 1, font: { family: 'JetBrains Mono', size: 10 } },
-          grid: { color: '#1c1f2a' },
-          border: { color: '#252836' }
-        },
-        y: {
-          stacked: true,
-          ticks: { color: '#9ca3b8', font: { family: 'JetBrains Mono', size: 11 } },
-          grid: { color: '#1c1f2a' },
-          border: { color: '#252836' }
-        }
+function renderGantt(tl){
+  if(ganttInst){ganttInst.destroy();ganttInst=null;}
+  if(!tl.length)return;
+  const colors=['#f5a623','#5b9cf6','#9d7ff4','#3dd68c','#f56565','#fb923c','#38bdf8','#c084fc'];
+  const parseW=w=>{const m=w.match(/(\d+)[^\d]+(\d+)/);return m?[+m[1],+m[2]]:[1,2];};
+  const labels=tl.map(t=>t.task.length>24?t.task.slice(0,22)+'…':t.task);
+  const starts=tl.map(t=>parseW(t.weeks)[0]-1);
+  const durations=tl.map(t=>{const[s,e]=parseW(t.weeks);return e-s+1;});
+  const canvas=document.getElementById('ganttCanvas');
+  canvas.height=Math.max(180,tl.length*46+70);
+  ganttInst=new Chart(canvas,{
+    type:'bar',
+    data:{labels,datasets:[
+      {data:starts,backgroundColor:'transparent',borderWidth:0,barPercentage:0.6},
+      {data:durations,backgroundColor:colors.slice(0,tl.length),borderWidth:0,barPercentage:0.6,borderRadius:5}
+    ]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?null:` ${tl[ctx.dataIndex].weeks}  ·  ${tl[ctx.dataIndex].duration}`}}},
+      scales:{
+        x:{stacked:true,title:{display:true,text:'Project Weeks',color:'#5a6079',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#5a6079',stepSize:1},grid:{color:'#1c1f2a'},border:{color:'#252836'}},
+        y:{stacked:true,ticks:{color:'#9ca3b8',font:{family:'JetBrains Mono',size:11}},grid:{color:'#1c1f2a'},border:{color:'#252836'}}
       }
     }
   });
