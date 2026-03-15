@@ -1,9 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
+  "functions": {
+    "api/generate.js": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
