@@ -21,10 +21,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(8,10,15,.92);backdrop-filt
 .logo sup{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--t3);font-weight:400;vertical-align:super;margin-left:3px}
 .step-pill{display:flex;gap:7px}
 .sp{width:26px;height:4px;border-radius:2px;background:var(--b2);transition:all .35s}
-.sp.on{background:var(--amber)}
-.sp.done{background:var(--green)}
-.page{display:none;animation:fadeUp .35s ease}
-.page.on{display:block}
+.sp.on{background:var(--amber)}.sp.done{background:var(--green)}
+.page{display:none;animation:fadeUp .35s ease}.page.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .home{max-width:900px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
 .badge{display:inline-flex;align-items:center;gap:7px;background:var(--amber3);border:1px solid rgba(245,166,35,.3);border-radius:100px;padding:5px 18px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--amber);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2rem}
@@ -69,12 +67,9 @@ textarea::placeholder{color:var(--t3)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ld-txt{font-size:.88rem;color:var(--t2)}
 .ld-steps{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-align:left;line-height:2.2;margin-top:.5rem}
-.ls{color:var(--b2);transition:color .3s}
-.ls::before{content:'○  '}
-.ls.active{color:var(--amber)}
-.ls.active::before{content:'◉  '}
-.ls.done{color:var(--green)}
-.ls.done::before{content:'✓  '}
+.ls{color:var(--b2);transition:color .3s}.ls::before{content:'○  '}
+.ls.active{color:var(--amber)}.ls.active::before{content:'◉  '}
+.ls.done{color:var(--green)}.ls.done::before{content:'✓  '}
 .res-wrap{max-width:920px;margin:0 auto;padding:2rem 2rem 5rem}
 .res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;flex-wrap:wrap;gap:10px}
 .res-hdr h2{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
@@ -86,8 +81,7 @@ textarea::placeholder{color:var(--t3)}
 .titem{display:flex;align-items:center;gap:9px;background:var(--s3);border-radius:7px;padding:.62rem 1rem;font-size:.85rem}
 .tdot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
 .wbs{font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:2.1}
-.wcat{color:var(--amber);font-weight:500}
-.wit{color:var(--t3);padding-left:1.3rem}
+.wcat{color:var(--amber);font-weight:500}.wit{color:var(--t3);padding-left:1.3rem}
 .dlist{display:flex;flex-direction:column;gap:10px}
 .ditem{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.83rem}
 .dtag{border-radius:5px;padding:3px 10px;font-size:.74rem}
@@ -125,7 +119,7 @@ textarea::placeholder{color:var(--t3)}
   <div class="home">
     <div class="badge"><div class="ping"></div>AI · NLP · Project Management</div>
     <h1>Turn meetings into<br><em>structured plans</em></h1>
-    <p class="sub">Paste any meeting transcript and AI will extract tasks, build a work breakdown structure, map dependencies, and render a Gantt chart — instantly.</p>
+    <p class="sub">Paste any meeting transcript and AI will extract tasks, build a work breakdown structure, map dependencies, and render a Gantt chart instantly.</p>
     <div class="cta-row">
       <button class="btn btn-p" onclick="go('input')">Start Planning →</button>
       <button class="btn btn-o" onclick="demo()">Try Demo</button>
@@ -144,7 +138,7 @@ textarea::placeholder{color:var(--t3)}
     <h2>Paste your transcript</h2>
     <p class="inp-sub">Include speaker names and discussion points for best results</p>
     <span class="lbl">Meeting Transcript</span>
-    <textarea id="tx" placeholder="Rahul: We should begin with UI design this week.&#10;Aditi: Backend API development can start next week.&#10;Client: Payment gateway integration must be done before launch.&#10;PM: Testing will start after development is complete." oninput="countChars()"></textarea>
+    <textarea id="tx" placeholder="Rahul: We should begin with UI design this week.&#10;Aditi: Backend API development can start next week.&#10;Client: Payment gateway must be done before launch.&#10;PM: Testing starts after development is complete." oninput="countChars()"></textarea>
     <div class="meta">
       <span id="cc">0 characters</span>
       <div class="sbuts">
@@ -259,12 +253,29 @@ async function generate(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({transcript:tx})
     });
-    const data=await res.json();
-    if(!res.ok) throw new Error(data.error||'Server error');
+
+    const text=await res.text();
+
+    if(!text||text.trim()===''){
+      throw new Error('Empty response from server');
+    }
+
+    let data;
+    try{
+      data=JSON.parse(text);
+    }catch(e){
+      throw new Error('Invalid response: '+text.substring(0,150));
+    }
+
+    if(!res.ok){
+      throw new Error(data.error||'Server error '+res.status);
+    }
+
     await delay(300);
     document.getElementById('loading').classList.remove('on');
     renderAll(data);
     go('results');
+
   }catch(e){
     document.getElementById('loading').classList.remove('on');
     go('input');
@@ -299,10 +310,10 @@ function renderGantt(tl){
     ]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?null:` ${tl[ctx.dataIndex].weeks}  ·  ${tl[ctx.dataIndex].duration}`}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?null:` ${tl[ctx.dataIndex].weeks} · ${tl[ctx.dataIndex].duration}`}}},
       scales:{
-        x:{stacked:true,title:{display:true,text:'Project Weeks',color:'#5a6079',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#5a6079',stepSize:1},grid:{color:'#1c1f2a'},border:{color:'#252836'}},
-        y:{stacked:true,ticks:{color:'#9ca3b8',font:{family:'JetBrains Mono',size:11}},grid:{color:'#1c1f2a'},border:{color:'#252836'}}
+        x:{stacked:true,title:{display:true,text:'Project Weeks',color:'#5a6079'},ticks:{color:'#5a6079',stepSize:1},grid:{color:'#1c1f2a'},border:{color:'#252836'}},
+        y:{stacked:true,ticks:{color:'#9ca3b8'},grid:{color:'#1c1f2a'},border:{color:'#252836'}}
       }
     }
   });
