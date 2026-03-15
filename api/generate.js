@@ -1,5 +1,4 @@
-export default async function handler(req, res) {
-  // Allow CORS
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -39,7 +38,7 @@ Rules: extract ALL tasks; group into WBS categories (Design/Development/Testing/
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -60,4 +59,4 @@ Rules: extract ALL tasks; group into WBS categories (Design/Development/Testing/
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-}
+};
